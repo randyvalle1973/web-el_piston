@@ -1,57 +1,6 @@
 const $ = (s, root=document) => root.querySelector(s);
 const $$ = (s, root=document) => [...root.querySelectorAll(s)];
 
-const demo = {
-  clients:[
-    {id:1,name:"Carlos Méndez",phone:"555-0182",address:"Calle 12, Centro"},
-    {id:2,name:"María González",phone:"555-0134",address:"Av. Libertad 45"},
-    {id:3,name:"Jorge Pérez",phone:"555-0198",address:"Reparto Norte"},
-    {id:4,name:"Ana Rodríguez",phone:"555-0167",address:"Calle 8, Vista Alegre"},
-    {id:5,name:"Luis Herrera",phone:"555-0122",address:"Zona Industrial"}
-  ],
-  vehicles:[
-    {id:1,plate:"P-48291",brand:"Toyota",model:"Corolla",year:2018,km:82400,client:1},
-    {id:2,plate:"P-19382",brand:"Hyundai",model:"Accent",year:2020,km:51300,client:2},
-    {id:3,plate:"P-82731",brand:"Kia",model:"Rio",year:2017,km:96700,client:3},
-    {id:4,plate:"P-65218",brand:"Honda",model:"Civic",year:2021,km:42600,client:4},
-    {id:5,plate:"P-31094",brand:"Chevrolet",model:"Spark",year:2016,km:112300,client:1},
-    {id:6,plate:"P-90442",brand:"Nissan",model:"Sentra",year:2019,km:73800,client:5}
-  ],
-  mechanics:[
-    {name:"Miguel Torres",initials:"MT"},
-    {name:"Daniel Cruz",initials:"DC"}
-  ],
-  orders:[
-    {id:1042,vehicle:1,client:1,mechanic:"Miguel Torres",problem:"Cambio de aceite y filtro",status:"En reparación",date:"08/11/2026"},
-    {id:1041,vehicle:2,client:2,mechanic:"Daniel Cruz",problem:"Revisión del sistema de frenos",status:"En diagnóstico",date:"08/11/2026"},
-    {id:1040,vehicle:3,client:3,mechanic:"Miguel Torres",problem:"Ruido en la suspensión delantera",status:"Recibida",date:"07/11/2026"},
-    {id:1039,vehicle:4,client:4,mechanic:"Daniel Cruz",problem:"Alineación y balanceo",status:"Lista para entregar",date:"07/11/2026"},
-    {id:1038,vehicle:5,client:1,mechanic:"Miguel Torres",problem:"Cambio de batería",status:"Entregada",date:"06/11/2026"},
-    {id:1037,vehicle:6,client:5,mechanic:"Daniel Cruz",problem:"Mantenimiento general",status:"En reparación",date:"05/11/2026"}
-  ],
-  parts:[
-    {id:1,name:"Filtro de aceite",code:"FIL-001",price:12,stock:3,min:5},
-    {id:2,name:"Pastillas de freno",code:"FRE-014",price:38,stock:2,min:4},
-    {id:3,name:"Aceite 10W-40",code:"LUB-010",price:29,stock:4,min:5},
-    {id:4,name:"Bujía estándar",code:"ENC-003",price:8,stock:18,min:6},
-    {id:5,name:"Filtro de aire",code:"FIL-002",price:16,stock:12,min:4},
-    {id:6,name:"Batería 12V",code:"ELE-008",price:95,stock:7,min:2},
-    {id:7,name:"Líquido de frenos",code:"FRE-020",price:11,stock:9,min:3}
-  ],
-  balances:[
-    {client:1,order:1035,total:280,paid:180},
-    {client:2,order:1036,total:190,paid:100},
-    {client:3,order:1032,total:145,paid:75},
-    {client:5,order:1030,total:320,paid:240}
-  ],
-  payments:[
-    {client:4,order:1039,date:"08/11/2026",method:"Efectivo",amount:120},
-    {client:1,order:1038,date:"07/11/2026",method:"Transferencia",amount:95},
-    {client:2,order:1036,date:"06/11/2026",method:"Efectivo",amount:100},
-    {client:3,order:1032,date:"05/11/2026",method:"Tarjeta",amount:75}
-  ]
-};
-
 let data = {
   clients: [],
   vehicles: [],
@@ -59,24 +8,14 @@ let data = {
   orders: [],
   parts: [],
   balances: [],
+  allBalances: [],
   payments: []
 };
+
 let currentPage = "inicio";
 let modalType = "";
 let selectedOrderId = null;
 let toastTimer;
-
-function loadData(){
-  try{
-    return JSON.parse(localStorage.getItem("elpiston-demo"))||structuredClone(demo);
-  }catch{
-    return structuredClone(demo);
-  }
-}
-
-function saveData(){
-  localStorage.setItem("elpiston-demo",JSON.stringify(data));
-}
 
 function money(n){
   return "$"+Number(n||0).toLocaleString("en-US",{maximumFractionDigits:2});
@@ -129,112 +68,112 @@ function showToast(message){
   toastTimer=setTimeout(()=>el.classList.remove("show"),2600);
 }
 
-async function cargarDatosPocketBase() {
-  if (!window.AuthAPI?.isAuthenticated()) return;
+async function cargarDatosPocketBase(){
+  if(!window.AuthAPI?.isAuthenticated())return;
 
-  try {
-    const [clients, vehicles, orders, parts, mechanics] = await Promise.all([
+  try{
+    const [clients,vehicles,orders,parts,mechanics]=await Promise.all([
       ClientesAPI.listar(),
       VehiculosAPI.listar(),
       OrdenesAPI.listar(),
       InventarioAPI.listar(),
       ElPiston.pb.collection("users").getFullList({
-        filter: 'rol = "mecanico"',
-        sort: "nombre"
+        filter:'rol = "mecanico"',
+        sort:"nombre"
       })
     ]);
 
-    data.clients = clients;
-    data.vehicles = vehicles;
-    data.parts = parts;
+    data.clients=clients;
+    data.vehicles=vehicles;
+    data.parts=parts;
 
-    data.mechanics = mechanics.map(m => ({
-      id: m.id,
-      name: m.nombre || m.email,
-      initials: initials(m.nombre || m.email)
+    data.mechanics=mechanics.map(m=>({
+      id:m.id,
+      name:m.nombre||m.email,
+      initials:initials(m.nombre||m.email)
     }));
 
-    data.orders = orders.map(o => {
-      const mechanic = mechanics.find(m => m.id === o.mechanicId);
+    data.orders=orders.map(o=>{
+      const mechanic=mechanics.find(m=>String(m.id)===String(o.mechanicId));
+      const v=o.vehicleInfo||vehicle(o.vehicle);
+      const c=client(o.client);
 
       return {
         ...o,
-        mechanic: mechanic?.nombre || mechanic?.email || o.mechanic || "Sin asignar"
+        vehicleInfo:v,
+        clientName:o.clientName||c.name,
+        mechanic:mechanic?.nombre||mechanic?.email||o.mechanic||"Sin asignar"
       };
     });
 
-    data.balances = [];
-    data.payments = [];
+    console.log("Órdenes recibidas de PocketBase:",data.orders);
 
-    if (AuthAPI.hasRole("dueno", "recepcionista")) {
-      const [payments, jobs, usedParts] = await Promise.all([
+    data.balances=[];
+    data.allBalances=[];
+    data.payments=[];
+
+    if(AuthAPI.hasRole("dueno","recepcionista")){
+      const [payments,jobs,usedParts]=await Promise.all([
         PagosAPI.listar(),
         ElPiston.pb.collection("trabajos").getFullList(),
         ElPiston.pb.collection("repuestos_usados").getFullList()
       ]);
 
-      const totals = new Map();
-      const paid = new Map();
+      const totals=new Map();
+      const paid=new Map();
 
-      data.orders.forEach(o => totals.set(String(o.id), 0));
+      data.orders.forEach(o=>totals.set(String(o.id),0));
 
-      jobs.forEach(job => {
-        const id = String(job.orden);
-        totals.set(
-          id,
-          (totals.get(id) || 0) + Number(job.precio_mano_obra || 0)
-        );
+      jobs.forEach(job=>{
+        const id=String(job.orden);
+        totals.set(id,(totals.get(id)||0)+Number(job.precio_mano_obra||0));
       });
 
-      usedParts.forEach(item => {
-        const id = String(item.orden);
-        const amount = Number(item.cantidad || 0) * Number(item.precio_unitario || 0);
-
-        totals.set(id, (totals.get(id) || 0) + amount);
+      usedParts.forEach(item=>{
+        const id=String(item.orden);
+        const amount=Number(item.cantidad||0)*Number(item.precio_unitario||0);
+        totals.set(id,(totals.get(id)||0)+amount);
       });
 
-      payments.forEach(payment => {
-        const id = String(payment.order);
-        paid.set(id, (paid.get(id) || 0) + payment.amount);
+      payments.forEach(payment=>{
+        const id=String(payment.order);
+        paid.set(id,(paid.get(id)||0)+Number(payment.amount||0));
       });
 
-      const ordersById = new Map(
-        data.orders.map(o => [String(o.id), o])
-      );
+      const ordersById=new Map(data.orders.map(o=>[String(o.id),o]));
 
-      data.balances = data.orders
-        .map(o => {
-          const id = String(o.id);
-          const total = totals.get(id) || 0;
-          const amountPaid = paid.get(id) || 0;
+      data.allBalances=data.orders.map(o=>{
+        const id=String(o.id);
+        const total=totals.get(id)||0;
+        const amountPaid=paid.get(id)||0;
 
-          return {
-            client: o.client,
-            clientName: o.clientName || client(o.client).name,
-            order: o.id,
-            total,
-            paid: amountPaid
-          };
-        })
-        .filter(b => b.total > b.paid);
+        return {
+          client:o.client,
+          clientName:o.clientName||client(o.client).name,
+          order:o.id,
+          total,
+          paid:amountPaid
+        };
+      });
 
-      data.payments = payments
-        .filter(p => ordersById.has(String(p.order)))
-        .map(p => {
-          const order = ordersById.get(String(p.order));
+      data.balances=data.allBalances.filter(b=>b.total>b.paid);
+
+      data.payments=payments
+        .filter(p=>ordersById.has(String(p.order)))
+        .map(p=>{
+          const order=ordersById.get(String(p.order));
 
           return {
             ...p,
-            client: order.client,
-            clientName: order.clientName || client(order.client).name,
-            date: p.date
-              ? new Date(p.date).toLocaleDateString("es-ES")
-              : "",
-            method: ({
-              efectivo: "Efectivo",
-              transferencia: "Transferencia",
-              tarjeta: "Tarjeta"
-            })[p.method] || p.method
+            client:order.client,
+            clientName:order.clientName||client(order.client).name,
+            date:p.date?new Date(p.date).toLocaleDateString("es-ES"):"",
+            dateISO:p.date||"",
+            method:({
+              efectivo:"Efectivo",
+              transferencia:"Transferencia",
+              tarjeta:"Tarjeta"
+            })[p.method]||p.method
           };
         });
     }
@@ -247,9 +186,9 @@ async function cargarDatosPocketBase() {
     renderPayments();
     renderReports();
 
-  } catch (error) {
-    console.error("Error cargando datos:", error);
-    console.error("Detalles:", JSON.stringify(error.response?.data, null, 2));
+  }catch(error){
+    console.error("Error cargando datos:",error);
+    console.error("Detalles:",JSON.stringify(error.response?.data,null,2));
     showToast(ElPiston.errorMessage(error));
   }
 }
@@ -294,8 +233,24 @@ function renderDashboard(){
   $("#statOpen").textContent=open.length;
   $("#statCars").textContent=open.length;
 
+  const now=new Date();
+
+  const monthlyPayments=data.payments.filter(p=>{
+    const date=new Date(p.dateISO||p.date);
+
+    return !Number.isNaN(date.getTime())&&
+      date.getMonth()===now.getMonth()&&
+      date.getFullYear()===now.getFullYear();
+  });
+
+  const income=monthlyPayments.reduce((sum,p)=>sum+Number(p.amount||0),0);
+  const due=data.balances.reduce((sum,b)=>sum+Number(b.total||0)-Number(b.paid||0),0);
+
+  if($("#statIncome"))$("#statIncome").textContent=money(income);
+  if($("#statDue"))$("#statDue").textContent=money(due);
+
   $("#recentOrders").innerHTML=data.orders.slice(0,5).map(o=>{
-   const v=o.vehicleInfo||vehicle(o.vehicle);
+    const v=o.vehicleInfo||vehicle(o.vehicle);
 
     return `<tr>
       <td>
@@ -312,7 +267,7 @@ function renderDashboard(){
       <td>${statusBadge(o.status)}</td>
       <td>${o.date||""}</td>
     </tr>`;
-  }).join("");
+  }).join("")||`<tr><td colspan="5">Todavía no hay órdenes registradas.</td></tr>`;
 
   const low=data.parts.filter(p=>p.stock<=p.min);
 
@@ -345,7 +300,7 @@ function renderDashboard(){
         <i style="width:${Math.min(100,n/6*100)}%"></i>
       </div>
     </div>`;
-  }).join("");
+  }).join("")||`<p class="muted-small">No hay mecánicos registrados.</p>`;
 }
 
 function renderOrders(){
@@ -355,13 +310,14 @@ function renderOrders(){
   const rows=data.orders.filter(o=>{
     const v=o.vehicleInfo||vehicle(o.vehicle);
     const c=client(o.client);
-    const text=`${o.id} ${v.plate} ${v.brand} ${v.model} ${c.name} ${o.problem||""}`.toLowerCase();
+    const text=`${o.id} ${v.plate} ${v.brand} ${v.model} ${o.clientName||c.name} ${o.problem||""}`.toLowerCase();
 
     return text.includes(q)&&(f==="Todas"||o.status===f);
   });
 
   $("#ordersTable").innerHTML=rows.map(o=>{
-    const v=vehicle(o.vehicle);
+    const v=o.vehicleInfo||vehicle(o.vehicle);
+    const c=client(o.client);
 
     return `<tr>
       <td><strong>#${o.id}</strong></td>
@@ -374,7 +330,7 @@ function renderOrders(){
           </div>
         </div>
       </td>
-      <td class="customer-name">${o.clientName||client(o.client).name}</td>
+      <td class="customer-name">${o.clientName||c.name}</td>
       <td>${o.mechanic||"Sin asignar"}</td>
       <td>${statusBadge(o.status)}</td>
       <td>${o.date||""}</td>
@@ -471,93 +427,152 @@ function renderParts(){
   $("#partValue").textContent=money(data.parts.reduce((s,p)=>s+p.price*p.stock,0));
 }
 
-function renderPayments() {
-  const now = new Date();
+function renderPayments(){
+  const now=new Date();
 
-  const monthlyPayments = data.payments.filter(p => {
-    const date = new Date(p.date);
+  const monthlyPayments=data.payments.filter(p=>{
+    const date=new Date(p.dateISO||p.date);
 
-    return !Number.isNaN(date.getTime()) &&
-      date.getMonth() === now.getMonth() &&
-      date.getFullYear() === now.getFullYear();
+    return !Number.isNaN(date.getTime())&&
+      date.getMonth()===now.getMonth()&&
+      date.getFullYear()===now.getFullYear();
   });
 
-  const income = monthlyPayments.reduce((sum, p) => sum + p.amount, 0);
+  const income=monthlyPayments.reduce((sum,p)=>sum+Number(p.amount||0),0);
 
-  const due = data.balances.reduce(
-    (sum, b) => sum + b.total - b.paid,
-    0
+  const due=data.balances.reduce((sum,b)=>sum+b.total-b.paid,0);
+
+  const clientsWithBalance=new Set(
+    data.balances.map(b=>String(b.client||b.clientName))
   );
 
-  const clientsWithBalance = new Set(
-    data.balances.map(b => String(b.client || b.clientName))
-  );
-
-  const partialOrders = data.balances.filter(
-    b => b.paid > 0 && b.paid < b.total
+  const partialOrders=data.allBalances.filter(
+    b=>b.paid>0&&b.paid<b.total
   ).length;
 
-  const settledOrders = data.orders.filter(o => {
-    const balance = data.balances.find(
-      b => String(b.order) === String(o.id)
-    );
+  const settledOrders=data.allBalances.filter(
+    b=>b.total>0&&b.paid>=b.total
+  ).length;
 
-    const total = balance?.total || 0;
-    const paid = balance?.paid || 0;
+  $("#paymentIncome").textContent=money(income);
+  $("#paymentDue").textContent=money(due);
+  $("#paymentClients").textContent=`De ${clientsWithBalance.size} clientes`;
+  $("#paymentPartial").textContent=partialOrders;
+  $("#paymentSettled").textContent=settledOrders;
 
-    return total > 0 && paid >= total;
-  }).length;
-
-  $("#paymentIncome").textContent = money(income);
-  $("#paymentDue").textContent = money(due);
-  $("#paymentClients").textContent = `De ${clientsWithBalance.size} clientes`;
-  $("#paymentPartial").textContent = partialOrders;
-  $("#paymentSettled").textContent = settledOrders;
-
-  $("#balancesTable").innerHTML = data.balances.map(b => `
+  $("#balancesTable").innerHTML=data.balances.map(b=>`
     <tr>
-      <td class="customer-name">${b.clientName || client(b.client).name}</td>
+      <td class="customer-name">${b.clientName||client(b.client).name}</td>
       <td>#${b.order}</td>
       <td>${money(b.total)}</td>
       <td>${money(b.paid)}</td>
-      <td class="balance">${money(b.total - b.paid)}</td>
+      <td class="balance">${money(b.total-b.paid)}</td>
       <td>
         <button class="row-action" data-action="balance" data-id="${b.order}">＋</button>
       </td>
     </tr>
-  `).join("") || `
-    <tr><td colspan="6">No hay saldos pendientes.</td></tr>
-  `;
+  `).join("")||`<tr><td colspan="6">No hay saldos pendientes.</td></tr>`;
 
-  $("#paymentsTable").innerHTML = data.payments.map(p => `
+  $("#paymentsTable").innerHTML=data.payments.map(p=>`
     <tr>
-      <td class="customer-name">${p.clientName || "Cliente no disponible"}</td>
+      <td class="customer-name">${p.clientName||"Cliente no disponible"}</td>
       <td>#${p.order}</td>
       <td>${p.date}</td>
       <td>${p.method}</td>
       <td class="customer-name">${money(p.amount)}</td>
     </tr>
-  `).join("") || `
-    <tr><td colspan="5">Todavía no hay pagos registrados.</td></tr>
-  `;
+  `).join("")||`<tr><td colspan="5">Todavía no hay pagos registrados.</td></tr>`;
 }
 
+async function renderReports(){
+  const container=$("#reportMechanics");
 
-function renderReports(){
-  $("#reportMechanics").innerHTML=data.mechanics.map(m=>{
-    const n=data.orders.filter(o=>
-      String(o.mechanicId||"")===String(m.id||"")||
-      o.mechanic===m.name
-    ).length;
+  if(!window.AuthAPI?.isAuthenticated()){
+    return;
+  }
 
-    const percentage=data.orders.length?n/data.orders.length*100:0;
+  if(!window.AuthAPI.hasRole("dueno")){
+    $("#incomeChart").innerHTML='<p class="muted-small">No tienes permisos para consultar los reportes.</p>';
+    return;
+  }
 
-    return `<div class="mechanic-report-row">
-      <strong>${m.name}</strong>
-      <div class="report-track"><i style="width:${percentage}%"></i></div>
-      <b>${n} órdenes</b>
-    </div>`;
-  }).join("");
+  try{
+    const periodo=$("#reportPeriod")?.value||"Este mes";
+    const resumen=await ReportesAPI.obtenerResumen(periodo);
+
+    $("#reportIncome").textContent=money(resumen.facturacionPeriodo);
+    $("#reportCompleted").textContent=resumen.ordenesCompletadas;
+    $("#reportAverage").textContent=money(resumen.ticketPromedio);
+    $("#reportClients").textContent=resumen.clientesAtendidos;
+
+    $("#reportIncomeLabel").textContent=`Ingresos: ${periodo.toLowerCase()}`;
+
+    const estados=resumen.porEstado||{};
+
+    const reparacion=Number(estados.en_reparacion||0);
+    const diagnostico=Number(estados.en_diagnostico||0);
+    const entregadas=Number(estados.entregada||0);
+    const total=Number(resumen.totalOrdenes||0);
+    const otras=Math.max(0,total-reparacion-diagnostico-entregadas);
+
+    $("#reportOrderTotal").textContent=total;
+    $("#reportRepair").textContent=reparacion;
+    $("#reportDiagnosis").textContent=diagnostico;
+    $("#reportDelivered").textContent=entregadas;
+    $("#reportOther").textContent=otras;
+
+    const porcentajes=[
+      reparacion,
+      diagnostico,
+      entregadas,
+      otras
+    ].map(n=>total?n/total*100:0);
+
+    const a=porcentajes[0];
+    const b=a+porcentajes[1];
+    const c=b+porcentajes[2];
+
+    $("#ordersDonut").style.background=total
+      ?`conic-gradient(
+        #ff7a1a 0% ${a}%,
+        #3989dc ${a}% ${b}%,
+        #19a477 ${b}% ${c}%,
+        #d6d6d6 ${c}% 100%
+      )`
+      :"conic-gradient(#444 0% 100%)";
+
+    const semanas=resumen.ingresosPorSemana||[];
+    const maxIngreso=Math.max(...semanas.map(s=>s.ingresos),1);
+
+    $("#incomeChart").innerHTML=semanas.length
+      ?`<div style="display:flex;align-items:flex-end;justify-content:space-around;gap:12px;height:210px;padding:20px 10px 5px">
+        ${semanas.map(s=>`
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:8px">
+            <strong style="font-size:11px">${money(s.ingresos)}</strong>
+            <div style="width:100%;max-width:65px;height:${Math.max(3,s.ingresos/maxIngreso*135)}px;background:#ff7a1a;border-radius:7px 7px 0 0"></div>
+            <span class="muted-small">${s.etiqueta}</span>
+          </div>
+        `).join("")}
+      </div>`
+      :'<p class="muted-small">No hay datos suficientes para generar el gráfico.</p>';
+
+    const mecanicos=Object.entries(resumen.porMecanico||{});
+
+    container.innerHTML=mecanicos.map(([nombre,cantidad])=>{
+      const porcentaje=total?cantidad/total*100:0;
+
+      return `<div class="mechanic-report-row">
+        <strong>${nombre}</strong>
+        <div class="report-track"><i style="width:${porcentaje}%"></i></div>
+        <b>${cantidad} órdenes</b>
+      </div>`;
+    }).join("")||'<p class="muted-small">No hay datos de mecánicos.</p>';
+
+  }catch(error){
+    console.error("Error generando reportes:",error);
+    $("#incomeChart").innerHTML='<p class="muted-small">No se pudieron cargar los reportes. Comprueba los permisos y las colecciones de PocketBase.</p>';
+    showToast(ElPiston.errorMessage(error));
+  }
 }
 
 const field=(label,name,placeholder="",type="text",full=false,options=null)=>
@@ -827,35 +842,24 @@ async function submitModal(e){
         return showToast("Comprueba el importe del pago y el saldo pendiente.");
       }
 
-      b.paid+=amount;
-
-      data.payments.unshift({
-        client:b.client,
-        order:b.order,
-        date:new Date().toLocaleDateString("es-ES"),
+      await PagosAPI.registrar({
+        order:values.order,
+        amount,
         method:values.method,
-        amount
+        date:new Date().toISOString()
       });
-
-      if(b.paid>=b.total){
-        data.balances=data.balances.filter(x=>x.order!==b.order);
-      }
-
-      saveData();
     }
-
-    const currentType=modalType;
 
     closeModal();
 
-   await cargarDatosPocketBase();
+    await cargarDatosPocketBase();
 
     renderPage(currentPage);
     showToast("Registro guardado correctamente.");
 
   }catch(error){
-    console.error("Error guardando registro:", error);
-console.error("Detalles de PocketBase:", error.response?.data);
+    console.error("Error guardando registro:",error);
+    console.error("Detalles de PocketBase:",error.response?.data);
     showToast(ElPiston.errorMessage(error));
   }
 }
@@ -998,9 +1002,11 @@ async function handleAction(e){
 function init(){
   const now=new Date();
 
-  $("#logoutBtn")?.addEventListener("click", () => {
-  AuthAPI.logout();
-});
+  $("#reportPeriod").addEventListener("change",renderReports);
+
+  $("#logoutBtn")?.addEventListener("click",()=>{
+    AuthAPI.logout();
+  });
 
   $("#todayLabel").textContent=now.toLocaleDateString("es-ES",{
     weekday:"short",
@@ -1057,15 +1063,15 @@ function init(){
 
   document.addEventListener("click",handleAction);
 
-  window.addEventListener("elpiston:authenticated",cargarDatosPocketBase);
+  window.addEventListener("elpiston:authenticated",()=>{
+    document.body.classList.add("authenticated");
+    cargarDatosPocketBase();
+  });
 
- $("#resetDemo").addEventListener("click", async () => {
-  if (confirm("¿Limpiar los datos locales de demostración?")) {
-    localStorage.removeItem("elpiston-demo");
+  $("#resetDemo")?.addEventListener("click",async()=>{
     await cargarDatosPocketBase();
-    showToast("Datos locales eliminados. Se muestran los registros de PocketBase.");
-  }
-});
+    showToast("Datos actualizados desde PocketBase.");
+  });
 
   $("#notificationBtn").addEventListener("click",()=>{
     navigate("inventario");
