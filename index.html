@@ -1,0 +1,585 @@
+
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#ff7a1a">
+  <title>El Pistón | Taller Mecánico</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <section class="login-screen" id="loginScreen">
+    <div class="login-card">
+      <div class="login-brand">
+        <div class="brand-mark">EP</div>
+        <div>
+          <strong>El Pistón</strong>
+          <span>Taller Mecánico</span>
+        </div>
+      </div>
+
+      <div class="login-heading">
+        <span class="eyebrow">BIENVENIDO</span>
+        <h1>Iniciar sesión</h1>
+        <p>Accede al sistema de gestión de tu taller.</p>
+      </div>
+
+      <form id="loginForm">
+        <div class="field">
+          <label for="loginEmail">Correo electrónico</label>
+          <input id="loginEmail" type="email" placeholder="correo@ejemplo.com" required>
+        </div>
+
+        <div class="field">
+          <label for="loginPassword">Contraseña</label>
+          <input id="loginPassword" type="password" placeholder="Introduce tu contraseña" required>
+        </div>
+
+        <p id="loginError" class="login-error"></p>
+
+        <button type="submit" class="primary-button login-button" id="loginButton">
+          Iniciar sesión
+        </button>
+      </form>
+
+      <p class="login-footer">© 2026 El Pistón · Taller Mecánico</p>
+    </div>
+  </section>
+
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-mark">EP</div>
+        <div>
+          <strong>El Pistón</strong>
+          <span>Taller Mecánico</span>
+        </div>
+      </div>
+
+      <div class="nav-caption">MENÚ PRINCIPAL</div>
+
+      <nav class="side-nav" id="sideNav">
+        <button class="nav-item active" data-page="inicio"><span class="nav-icon">⌂</span>Inicio</button>
+        <button class="nav-item" data-page="ordenes"><span class="nav-icon">▤</span>Órdenes de servicio <span class="nav-count">6</span></button>
+        <button class="nav-item" data-page="clientes"><span class="nav-icon">♙</span>Clientes</button>
+        <button class="nav-item" data-page="vehiculos"><span class="nav-icon">▰</span>Vehículos</button>
+        <button class="nav-item" data-page="inventario"><span class="nav-icon">▦</span>Inventario <span class="nav-dot"></span></button>
+        <button class="nav-item" data-page="pagos"><span class="nav-icon">＄</span>Pagos</button>
+        <button class="nav-item" data-page="reportes"><span class="nav-icon">▥</span>Reportes</button>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <div class="help-card">
+          <div class="help-icon">✦</div>
+          <strong>¿Necesitas ayuda?</strong>
+          <p>Consulta la información del taller desde cualquier dispositivo.</p>
+          <button data-page="perfil">Ver perfil <span>→</span></button>
+        </div>
+
+        <button class="nav-item" data-page="perfil"><span class="nav-icon">⚙</span>Configuración</button>
+
+        <button class="logout-btn" id="logoutBtn">
+          <span>↪</span>
+          Cerrar sesión
+        </button>
+
+        <div class="user-mini">
+          <div class="avatar">RC</div>
+          <div>
+            <strong>Recepción</strong>
+            <span>Administrador</span>
+          </div>
+          <button class="more-btn" aria-label="Opciones">•••</button>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-area">
+      <header class="topbar">
+        <button class="mobile-brand" data-page="inicio">
+          <span class="brand-mark small">EP</span>
+          <strong>El Pistón</strong>
+        </button>
+
+        <div class="breadcrumbs">
+          <span>El Pistón</span>
+          <b>/</b>
+          <strong id="crumb">Inicio</strong>
+        </div>
+
+        <div class="top-actions">
+          <div class="today-label" id="todayLabel"></div>
+          <button class="icon-btn theme-toggle" id="themeToggle" title="Cambiar tema" aria-label="Cambiar tema">☾</button>
+          <button class="icon-btn notification-btn" id="notificationBtn" title="Notificaciones" aria-label="Notificaciones">♧<i></i></button>
+          <div class="top-avatar">RC</div>
+        </div>
+      </header>
+
+      <div class="page-wrap">
+        <section class="page active" id="page-inicio">
+          <div class="welcome-banner">
+            <div class="welcome-copy">
+              <span class="eyebrow">PANEL DE CONTROL</span>
+              <h1>¡Hola! <span class="wave">✦</span></h1>
+              <p>Esto es lo que está pasando hoy en tu taller.</p>
+              <div class="banner-date" id="bannerDate"></div>
+            </div>
+            <div class="banner-art" aria-hidden="true">
+              <div class="gear gear-one">⚙</div>
+              <div class="gear gear-two">⚙</div>
+              <div class="banner-car">🚘</div>
+              <div class="banner-orbit"></div>
+            </div>
+          </div>
+
+          <div class="section-heading">
+            <div>
+              <span class="eyebrow">EN UN VISTAZO</span>
+              <h2>Resumen general</h2>
+            </div>
+            <button class="text-action" data-page="reportes">Ver reportes <span>→</span></button>
+          </div>
+
+          <div class="stats-grid">
+            <article class="stat-card">
+              <div class="stat-top"><span>Órdenes abiertas</span><span class="stat-icon orange">▤</span></div>
+              <div class="stat-value" id="statOpen">8</div>
+              <div class="stat-foot"><span class="trend up">↗ 12%</span><span>vs. mes anterior</span></div>
+              <div class="stat-line orange-line"><i style="width:72%"></i></div>
+            </article>
+
+            <article class="stat-card">
+              <div class="stat-top"><span>Vehículos en taller</span><span class="stat-icon blue">▰</span></div>
+              <div class="stat-value" id="statCars">5</div>
+              <div class="stat-foot"><span class="trend neutral">En proceso</span><span>ahora mismo</span></div>
+              <div class="stat-line blue-line"><i style="width:56%"></i></div>
+            </article>
+
+            <article class="stat-card">
+              <div class="stat-top"><span>Ingresos del mes</span><span class="stat-icon green">＄</span></div>
+              <div class="stat-value" id="statIncome">$2,840</div>
+              <div class="stat-foot"><span class="trend up">↗ 8.4%</span><span>vs. mes anterior</span></div>
+              <div class="stat-line green-line"><i style="width:83%"></i></div>
+            </article>
+
+            <article class="stat-card">
+              <div class="stat-top"><span>Por cobrar</span><span class="stat-icon purple">◷</span></div>
+              <div class="stat-value" id="statDue">$640</div>
+              <div class="stat-foot"><span class="trend warning">Pendiente</span><span>de clientes</span></div>
+              <div class="stat-line purple-line"><i style="width:38%"></i></div>
+            </article>
+          </div>
+
+          <div class="dashboard-grid">
+            <section class="panel recent-panel">
+              <div class="panel-heading">
+                <div>
+                  <span class="eyebrow">ACTIVIDAD</span>
+                  <h3>Órdenes recientes</h3>
+                </div>
+                <button class="text-action" data-page="ordenes">Ver todas <span>→</span></button>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr><th>VEHÍCULO</th><th>CLIENTE</th><th>MECÁNICO</th><th>ESTADO</th><th>FECHA</th></tr>
+                  </thead>
+                  <tbody id="recentOrders"></tbody>
+                </table>
+              </div>
+            </section>
+
+            <section class="panel alerts-panel">
+              <div class="panel-heading">
+                <div>
+                  <span class="eyebrow">ATENCIÓN</span>
+                  <h3>Alertas de inventario</h3>
+                </div>
+                <span class="alert-counter" id="alertCounter">3</span>
+              </div>
+              <div id="dashboardAlerts" class="alert-list"></div>
+              <button class="outline-button full" data-page="inventario">Revisar inventario <span>→</span></button>
+            </section>
+          </div>
+
+          <section class="panel workload-panel">
+            <div class="panel-heading">
+              <div>
+                <span class="eyebrow">EQUIPO</span>
+                <h3>Carga de trabajo</h3>
+              </div>
+              <span class="muted-small">Órdenes activas por mecánico</span>
+            </div>
+            <div id="workload" class="workload-list"></div>
+          </section>
+        </section>
+
+        <section class="page" id="page-ordenes">
+          <div class="page-heading">
+            <div>
+              <span class="eyebrow">GESTIÓN DEL TALLER</span>
+              <h1>Órdenes de servicio</h1>
+              <p>Controla las reparaciones y el estado de cada vehículo.</p>
+            </div>
+            <button class="primary-button" id="newOrderBtn">＋ Nueva orden</button>
+          </div>
+
+          <div class="toolbar">
+            <div class="search-box"><span>⌕</span><input id="orderSearch" placeholder="Buscar matrícula, cliente o problema..."></div>
+            <select id="orderFilter">
+              <option value="Todas">Todos los estados</option>
+              <option>Recibida</option>
+              <option>En diagnóstico</option>
+              <option>En reparación</option>
+              <option>Lista para entregar</option>
+              <option>Entregada</option>
+              <option>Cancelada</option>
+            </select>
+          </div>
+
+          <div class="panel">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>ORDEN</th><th>VEHÍCULO</th><th>CLIENTE</th><th>MECÁNICO</th><th>ESTADO</th><th>ENTRADA</th><th></th></tr>
+                </thead>
+                <tbody id="ordersTable"></tbody>
+              </table>
+            </div>
+            <div class="table-footer">
+              <span id="ordersCount">Mostrando órdenes</span>
+              <span class="muted-small">Datos de PocketBase</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="page" id="page-clientes">
+          <div class="page-heading">
+            <div>
+              <span class="eyebrow">DIRECTORIO</span>
+              <h1>Clientes</h1>
+              <p>Información de contacto e historial de tus clientes.</p>
+            </div>
+            <button class="primary-button" id="newClientBtn">＋ Nuevo cliente</button>
+          </div>
+
+          <div class="toolbar">
+            <div class="search-box"><span>⌕</span><input id="clientSearch" placeholder="Buscar por nombre o teléfono..."></div>
+            <div class="toolbar-note" id="clientCount"></div>
+          </div>
+
+          <div class="panel">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>CLIENTE</th><th>TELÉFONO</th><th>DIRECCIÓN</th><th>VEHÍCULOS</th><th>ÓRDENES</th><th></th></tr>
+                </thead>
+                <tbody id="clientsTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="page" id="page-vehiculos">
+          <div class="page-heading">
+            <div>
+              <span class="eyebrow">REGISTRO</span>
+              <h1>Vehículos</h1>
+              <p>Todos los vehículos registrados en el taller.</p>
+            </div>
+            <button class="primary-button" id="newVehicleBtn">＋ Nuevo vehículo</button>
+          </div>
+
+          <div class="toolbar">
+            <div class="search-box"><span>⌕</span><input id="vehicleSearch" placeholder="Buscar matrícula, marca o cliente..."></div>
+          </div>
+
+          <div class="vehicle-grid" id="vehiclesGrid"></div>
+        </section>
+
+        <section class="page" id="page-inventario">
+          <div class="page-heading">
+            <div>
+              <span class="eyebrow">CONTROL DE EXISTENCIAS</span>
+              <h1>Inventario</h1>
+              <p>Administra repuestos y mantén el stock bajo control.</p>
+            </div>
+            <button class="primary-button" id="newPartBtn">＋ Añadir repuesto</button>
+          </div>
+
+          <div class="inventory-summary">
+            <div class="mini-stat"><span class="mini-icon orange">▦</span><div><span>Total de referencias</span><strong id="partTotal">24</strong></div></div>
+            <div class="mini-stat"><span class="mini-icon red">!</span><div><span>Stock bajo</span><strong id="partLow">3</strong></div></div>
+            <div class="mini-stat"><span class="mini-icon green">＄</span><div><span>Valor del inventario</span><strong id="partValue">$4,280</strong></div></div>
+          </div>
+
+          <div class="toolbar">
+            <div class="search-box"><span>⌕</span><input id="partSearch" placeholder="Buscar repuesto por nombre o código..."></div>
+            <select id="partFilter">
+              <option value="todos">Todo el inventario</option>
+              <option value="bajo">Solo stock bajo</option>
+            </select>
+          </div>
+
+          <div class="panel">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr><th>REPUESTO</th><th>CÓDIGO</th><th>PRECIO</th><th>EXISTENCIAS</th><th>ESTADO</th><th></th></tr>
+                </thead>
+                <tbody id="partsTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section class="page" id="page-pagos">
+  <div class="page-heading">
+    <div>
+      <span class="eyebrow">CAJA DEL TALLER</span>
+      <h1>Pagos y saldos</h1>
+      <p>Consulta los cobros realizados y los importes pendientes.</p>
+    </div>
+    <button class="primary-button" id="newPaymentBtn">＋ Registrar pago</button>
+  </div>
+
+  <div class="stats-grid compact-stats">
+    <article class="stat-card">
+      <div class="stat-top">
+        <span>Recaudado</span>
+        <span class="stat-icon green">＄</span>
+      </div>
+      <div class="stat-value" id="paymentIncome">$0</div>
+      <div class="stat-foot"><span>Este mes</span></div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-top">
+        <span>Saldo pendiente</span>
+        <span class="stat-icon purple">◷</span>
+      </div>
+      <div class="stat-value" id="paymentDue">$0</div>
+      <div class="stat-foot">
+        <span id="paymentClients">De 0 clientes</span>
+      </div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-top">
+        <span>Pagos parciales</span>
+        <span class="stat-icon orange">◒</span>
+      </div>
+      <div class="stat-value" id="paymentPartial">0</div>
+      <div class="stat-foot"><span>Órdenes con abonos</span></div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-top">
+        <span>Órdenes saldadas</span>
+        <span class="stat-icon blue">✓</span>
+      </div>
+      <div class="stat-value" id="paymentSettled">0</div>
+      <div class="stat-foot"><span>Este mes</span></div>
+    </article>
+  </div>
+
+  <div class="panel">
+    <div class="panel-heading">
+      <div>
+        <span class="eyebrow">CUENTAS PENDIENTES</span>
+        <h3>Clientes con saldo</h3>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>CLIENTE</th>
+            <th>ORDEN</th>
+            <th>TOTAL</th>
+            <th>PAGADO</th>
+            <th>PENDIENTE</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="balancesTable"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="panel spaced-panel">
+    <div class="panel-heading">
+      <div>
+        <span class="eyebrow">MOVIMIENTOS</span>
+        <h3>Últimos pagos</h3>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>CLIENTE</th>
+            <th>ORDEN</th>
+            <th>FECHA</th>
+            <th>MÉTODO</th>
+            <th>IMPORTE</th>
+          </tr>
+        </thead>
+        <tbody id="paymentsTable"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+        <section class="page" id="page-reportes">
+          <div class="page-heading">
+            <div>
+              <span class="eyebrow">ANÁLISIS DEL NEGOCIO</span>
+              <h1>Reportes</h1>
+              <p>Una visión rápida del rendimiento del taller.</p>
+            </div>
+            <select class="period-select" id="reportPeriod">
+              <option>Últimos 7 días</option>
+              <option selected>Este mes</option>
+              <option>Este año</option>
+            </select>
+          </div>
+
+          <div class="stats-grid compact-stats">
+            <article class="stat-card"><div class="stat-top"><span>Facturación</span><span class="stat-icon green">＄</span></div><div class="stat-value">$3,480</div><div class="stat-foot"><span class="trend up">↗ 8.4%</span><span>respecto al período anterior</span></div></article>
+            <article class="stat-card"><div class="stat-top"><span>Órdenes completadas</span><span class="stat-icon blue">✓</span></div><div class="stat-value">18</div><div class="stat-foot"><span>En el período</span></div></article>
+            <article class="stat-card"><div class="stat-top"><span>Ticket promedio</span><span class="stat-icon orange">◉</span></div><div class="stat-value">$193</div><div class="stat-foot"><span>Por orden</span></div></article>
+            <article class="stat-card"><div class="stat-top"><span>Clientes atendidos</span><span class="stat-icon purple">♙</span></div><div class="stat-value">23</div><div class="stat-foot"><span>En el período</span></div></article>
+          </div>
+
+          <div class="reports-grid">
+            <section class="panel chart-panel">
+              <div class="panel-heading">
+                <div><span class="eyebrow">INGRESOS</span><h3>Facturación por semana</h3></div>
+                <span class="chart-legend"><i></i>Ingresos</span>
+              </div>
+              <div class="chart" id="incomeChart">
+                <div class="chart-y"><span>$1,000</span><span>$750</span><span>$500</span><span>$250</span><span>$0</span></div>
+                <div class="chart-bars">
+                  <div class="chart-guides"><i></i><i></i><i></i><i></i><i></i></div>
+                  <div class="bar-group"><i style="height:45%"></i><span>Sem. 1</span></div>
+                  <div class="bar-group"><i style="height:68%"></i><span>Sem. 2</span></div>
+                  <div class="bar-group"><i style="height:54%"></i><span>Sem. 3</span></div>
+                  <div class="bar-group"><i style="height:88%"></i><span>Sem. 4</span></div>
+                </div>
+              </div>
+            </section>
+
+            <section class="panel breakdown-panel">
+              <div class="panel-heading"><div><span class="eyebrow">DISTRIBUCIÓN</span><h3>Órdenes por estado</h3></div></div>
+              <div class="donut-wrap">
+                <div class="donut"><div><strong>26</strong><span>Órdenes</span></div></div>
+                <div class="legend-list">
+                  <span><i class="legend-dot orange-dot"></i>En reparación <b>9</b></span>
+                  <span><i class="legend-dot blue-dot"></i>Diagnóstico <b>6</b></span>
+                  <span><i class="legend-dot green-dot"></i>Entregadas <b>8</b></span>
+                  <span><i class="legend-dot gray-dot"></i>Otras <b>3</b></span>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <section class="panel spaced-panel">
+            <div class="panel-heading"><div><span class="eyebrow">RENDIMIENTO</span><h3>Trabajo por mecánico</h3></div></div>
+            <div id="reportMechanics" class="mechanic-report"></div>
+          </section>
+        </section>
+
+        <section class="page" id="page-perfil">
+          <div class="page-heading">
+            <div>
+              <span class="eyebrow">PREFERENCIAS</span>
+              <h1>Configuración</h1>
+              <p>Personaliza la experiencia de El Pistón.</p>
+            </div>
+          </div>
+
+          <div class="settings-layout">
+            <section class="panel settings-profile">
+              <div class="profile-cover"></div>
+              <div class="profile-body">
+                <div class="profile-avatar">RC</div>
+                <h3>Recepción</h3>
+                <p>Administrador del taller</p>
+                <span class="role-chip">Administrador</span>
+              </div>
+            </section>
+
+            <section class="panel settings-panel">
+              <div class="panel-heading"><div><span class="eyebrow">APARIENCIA</span><h3>Personalización</h3></div></div>
+              <div class="setting-row">
+                <div><strong>Modo oscuro</strong><span>Usar una apariencia oscura en la aplicación.</span></div>
+                <label class="switch"><input type="checkbox" id="darkModeSwitch"><span></span></label>
+              </div>
+              <div class="setting-row">
+                <div><strong>Color principal</strong><span>El naranja forma parte de la identidad del taller.</span></div>
+                <span class="color-swatch"></span>
+              </div>
+              <div class="setting-row">
+                <div><strong>Moneda</strong><span>Moneda utilizada para mostrar importes.</span></div>
+                <strong class="setting-value">USD ($)</strong>
+              </div>
+              <div class="setting-row">
+                <div><strong>Datos de demostración</strong><span>Restablecer los datos de ejemplo guardados en este navegador.</span></div>
+                <button class="outline-button" id="resetDemo">Restablecer</button>
+              </div>
+            </section>
+          </div>
+        </section>
+      </div>
+
+      <footer class="footer">
+        <span>© 2026 El Pistón · Taller Mecánico</span>
+        <span>Hecho para mantener tu taller en marcha <b>✦</b></span>
+      </footer>
+    </main>
+  </div>
+
+  <nav class="mobile-nav" id="mobileNav">
+    <button class="active" data-page="inicio"><span>⌂</span>Inicio</button>
+    <button data-page="ordenes"><span>▤</span>Órdenes</button>
+    <button data-page="inventario"><span>▦</span>Inventario</button>
+    <button data-page="perfil"><span>⚙</span>Perfil</button>
+  </nav>
+
+  <div class="modal-backdrop" id="modalBackdrop">
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-head">
+        <div>
+          <span class="eyebrow">EL PISTÓN</span>
+          <h2 id="modalTitle">Nuevo registro</h2>
+        </div>
+        <button class="icon-btn close-modal" id="closeModal" aria-label="Cerrar">×</button>
+      </div>
+
+      <form id="modalForm">
+        <div id="modalFields" class="form-grid"></div>
+        <div class="modal-actions">
+          <button type="button" class="outline-button" id="cancelModal">Cancelar</button>
+          <button type="submit" class="primary-button">Guardar registro</button>
+        </div>
+      </form>
+    </section>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/pocketbase@0.26.2/dist/pocketbase.umd.js"></script>
+  <script src="js/pocketbase.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/login.js"></script>
+  <script src="js/clientes.js"></script>
+  <script src="js/vehiculos.js"></script>
+  <script src="js/ordenes.js"></script>
+  <script src="js/inventario.js"></script>
+  <script src="js/pagos.js"></script>
+  <script src="js/reportes.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
